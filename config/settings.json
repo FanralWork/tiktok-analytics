@@ -1,0 +1,17 @@
+{
+  "batch_size": 25,
+  "pilot_size": 15,
+  "retries": 3,
+  "minimum_disk_gib": 4,
+  "minimum_ram_gib": 3,
+  "maximum_media_mib": 96,
+  "maximum_video_height": 540,
+  "whisper_model": "small",
+  "whisper_device": "auto",
+  "ollama_model": "qwen3:4b",
+  "ollama_port": 11439,
+  "ollama_context": 12288,
+  "ocr_language": "cyrillic",
+  "ocr_version": "PP-OCRv5",
+  "request_interval_seconds": 2
+}

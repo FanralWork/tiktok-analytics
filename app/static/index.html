@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>TikTok Аналитика</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a href="/" class="brand" aria-label="TikTok Аналитика">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span>TikTok <strong>Аналитика</strong></span>
+    </a>
+    <nav class="nav" aria-label="Разделы">
+      <button data-view="overview" aria-current="page"><span class="nav-icon overview-icon"></span>Обзор</button>
+      <button data-view="videos"><span class="nav-icon video-icon"></span>Публикации <span id="nav-count"></span></button>
+      <button data-view="history"><span class="nav-icon report-icon"></span>Отчёты</button>
+    </nav>
+    <div class="sidebar-footer"><span class="local-dot"></span><div><strong>Локальная обработка</strong><small>Qwen · Ollama · Автор Fanral</small></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><span>Рабочая область <b>/</b> <strong id="breadcrumb">Обзор</strong></span><span class="local-pill"><span class="local-dot"></span>localhost</span></header>
+    <div class="content">
+      <section class="intro">
+        <h1>Аналитика контента</h1>
+        <p>Субтитры, надписи на превью и выводы по публикациям TikTok.</p>
+      </section>
+      <form class="panel analysis-form" id="analysis-form">
+        <div class="form-grid">
+          <label class="url-field" for="profile">Ссылка на профиль или ролик
+            <span class="input-wrap"><span class="link-icon" aria-hidden="true">↗</span><input id="profile" name="profile" type="url" placeholder="https://www.tiktok.com/@username" required autocomplete="off"></span>
+          </label>
+          <label class="limit-field" for="limit">Роликов
+            <span class="stepper"><button type="button" id="minus" aria-label="Уменьшить количество">−</button><input id="limit" name="limit" type="number" min="1" step="1" value="30" required><button type="button" id="plus" aria-label="Увеличить количество">+</button></span>
+          </label>
+          <button type="submit" id="run-button" class="button primary"><span class="play-icon" aria-hidden="true"></span>Запустить анализ</button>
+        </div>
+        <div class="form-bottom">
+          <label class="check"><input id="refresh" type="checkbox"> Сверить каталог с TikTok</label>
+          <button type="submit" id="run-all" class="button" formnovalidate>Проанализировать все публикации</button>
+        </div>
+        <details class="direct-links">
+          <summary>Использовать список прямых ссылок</summary>
+          <label for="direct">Ссылки на ролики указанного аккаунта, по одной на строку</label>
+          <textarea id="direct" rows="3" spellcheck="false" autocomplete="off" placeholder="https://www.tiktok.com/@username/video/…"></textarea>
+        </details>
+        <div id="form-error" class="error" role="alert" hidden></div>
+      </form>
+      <div id="progress" class="panel progress" role="status" aria-live="polite" hidden></div>
+
+      <section id="dashboard" aria-label="Обзор отчёта">
+        <div class="section-head">
+          <div><div id="data-label" class="data-label"></div><h2 id="account-title">Отчётов пока нет</h2><p id="scope"></p></div>
+          <div class="actions" id="exports"></div>
+        </div>
+        <div id="dashboard-content" hidden>
+        <div id="metrics" class="metrics"></div>
+        <div class="charts">
+          <section class="panel chart-panel">
+            <div class="panel-title"><div><h3>Публикации по времени</h3><p>По датам, которые отдал TikTok</p></div><span id="activity-period" class="badge"></span></div>
+            <div id="activity"></div>
+          </section>
+          <section class="panel chart-panel">
+            <div class="panel-title"><div><h3>Доступность источников</h3><p>В пределах выбранных роликов</p></div></div>
+            <div id="coverage"></div>
+          </section>
+        </div>
+        <section class="panel overview-panel">
+          <div class="panel-title"><div><h3>Общий вывод</h3><p>По субтитрам и распознанным надписям</p></div><span id="overview-origin" class="badge ai"></span></div>
+          <div id="summary"></div>
+        </section>
+        <div class="charts details-charts">
+          <section class="panel chart-panel"><div class="panel-title"><div><h3>Темы</h3><p>Публикации с извлечённым текстом</p></div></div><div id="topics"></div></section>
+          <section class="panel chart-panel"><div class="panel-title"><div><h3>Настроение текста</h3><p>Оценка доступных реплик и надписей</p></div></div><div id="moods"></div></section>
+        </div>
+        <details id="notes" class="notes" hidden><summary>Охват и ограничения</summary><ul id="notes-list"></ul></details>
+        </div>
+      </section>
+
+      <section id="videos-section" class="panel table-panel">
+        <div class="panel-title table-head"><div><h3>Публикации</h3><p id="listing-count"></p></div>
+          <div class="filters"><label class="sr-only" for="search">Поиск по публикациям</label><input type="search" id="search" placeholder="Поиск по публикациям">
+            <label class="sr-only" for="source-filter">Источник</label><select id="source-filter"><option value="">Все источники</option><option value="captions">Есть субтитры или расшифровка</option><option value="ocr">Есть текст на превью</option><option value="summary">Есть вывод</option><option value="missing">Текст недоступен</option></select>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table><thead><tr><th>Ролик</th><th>Дата</th><th>Источники</th><th>Настроение</th><th><span class="sr-only">Карточка</span></th></tr></thead><tbody id="video-list"></tbody></table>
+        </div>
+        <div id="pages" class="pages"></div>
+      </section>
+
+      <section id="history" class="panel history" hidden>
+        <div class="panel-title"><div><h3>Сохранённые отчёты</h3></div></div>
+        <div id="history-list"></div>
+      </section>
+    </div>
+  </main>
+  <footer class="mobile-credit">Автор приложения · Fanral</footer>
+  <dialog id="video-dialog" class="video-dialog"><div class="dialog-inner"><header class="dialog-head"><h2 id="dialog-title"></h2><form method="dialog"><button class="button quiet" aria-label="Закрыть">×</button></form></header><div id="dialog-content"></div></div></dialog>
+</body>
+</html>
