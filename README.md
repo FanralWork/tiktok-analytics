@@ -1,49 +1,45 @@
-# TikTok Analytics
+# TikTok Аналитика
 
-A local Windows application and CLI for collecting available public TikTok posts and producing reports from captions, thumbnail text, and other available source evidence.
+Приложение для Windows и консольная утилита собирают доступные публичные публикации TikTok и готовят отчёты по субтитрам, тексту превью и другим материалам источника.
 
-## Features
+## Возможности
 
-- Accepts a public profile URL, a post URL, or a list of direct post URLs.
-- Extracts available captions, runs OCR on thumbnails, and can transcribe available media locally.
-- Uses a local Qwen model through Ollama to summarize evidence and retains source links, timestamped excerpts, and review markers.
-- Stores report history locally and supports continuing interrupted or incomplete processing.
-- Exports standalone HTML, XLSX, CSV, Markdown, and JSON reports.
+- Принимает ссылку на публичный профиль, отдельную публикацию или список ссылок.
+- Извлекает доступные субтитры, распознаёт текст на превью и может локально расшифровать речь.
+- Формирует выводы с помощью локальной модели Qwen через Ollama. В отчёте сохраняет ссылки, фрагменты с временными метками и отметки для проверки.
+- Хранит отчёты локально и позволяет продолжить неполную или прерванную обработку.
+- Экспортирует HTML, XLSX, CSV, Markdown и JSON.
 
-## Stack and architecture
+## Устройство
 
-`app/server.py` serves a loopback-only HTTP interface. The frontend uses HTML, CSS, and JavaScript. `app/service.py` manages runs and report history. `scripts/` implements discovery, media handling, recognition, evidence processing, and the SQLite-backed CLI. The Python pipeline uses yt-dlp, FFmpeg, RapidOCR with ONNX Runtime, faster-whisper, Ollama, and XlsxWriter.
+`app/server.py` обслуживает веб-интерфейс на локальном адресе. Интерфейс написан на HTML, CSS и JavaScript. `app/service.py` управляет запуском и историей отчётов. В `scripts/` расположены CLI, каталог публикаций и конвейер обработки. Для работы используются SQLite, yt-dlp, FFmpeg, RapidOCR, ONNX Runtime, faster-whisper, Ollama и XlsxWriter.
 
-## Installation and launch
+## Установка и запуск
 
-Install Python 3.14 x64 and Ollama for Windows and make them available in `PATH`. Run the following commands from the project directory in PowerShell.
+Установите Python 3.14 x64 и Ollama для Windows, добавьте их в `PATH` и выполните из папки проекта в PowerShell:
 
 ```powershell
 .\scripts\bootstrap.ps1
 .\.venv\Scripts\python.exe app\server.py --open
 ```
 
-The bootstrap installs the pinned Python dependencies and obtains FFmpeg and the configured Ollama model. The first speech recognition run may download a Whisper model. Optional NVIDIA support is installed with `.\scripts\bootstrap.ps1 -EnableCUDA`. The normal Windows launcher is `Запустить TikTok Аналитику.cmd`. The default UI address is `http://127.0.0.1:8765/`. Recognition and language-model defaults are in `config/settings.json`.
+Сценарий установки загрузит FFmpeg, версию модели Ollama из настроек и закреплённые зависимости Python. При первом распознавании речи может загрузиться модель Whisper. Для поддержки NVIDIA выполните `.\scripts\bootstrap.ps1 -EnableCUDA`. Приложение также можно открыть через `Запустить TikTok Аналитику.cmd`. Адрес интерфейса по умолчанию — `http://127.0.0.1:8765/`. Настройки моделей и распознавания находятся в `config/settings.json`.
 
-## Usage
+## Пример использования
 
-Enter the URL of a public profile you manage or paste a list of its public post URLs. Start a small analysis, inspect the recovered evidence for each card, and open the report folder. The local interface is in Russian.
+Введите ссылку на доступный публичный профиль или список ссылок на публикации. Запустите обработку небольшого списка, изучите найденные материалы и откройте папку отчёта.
 
-The CLI can import a text file with one direct URL per line.
+Консольная утилита принимает текстовый файл с одной ссылкой в строке:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\tiktok_analysis.py --profile 'https://www.tiktok.com/@username' import '.\links.txt'
 .\.venv\Scripts\python.exe scripts\tiktok_analysis.py status
 ```
 
-Web reports are written to `Отчёты/` and app state to `app_data/`. Keep media, inputs, and reports out of the repository. The [CLI guide](scripts/README.md) documents more commands in Russian.
+Отчёты веб-приложения сохраняются в `Отчёты/`, локальное состояние — в `app_data/`. Дополнительные команды есть в [руководстве по CLI](scripts/README.md).
 
-## Status and limitations
+## Ограничения и проверка
 
-Public catalogue and media availability can vary. The reports flag unconfirmed coverage and insufficient source material. Local model output and recognition are heuristic and should be checked against the evidence. A clean bootstrap, live TikTok collection, and end-to-end model execution were outside the local regression run for this review.
+Доступность каталога, субтитров и медиа зависит от источника. Приложение помечает неполный охват и случаи, когда данных для вывода недостаточно. Вывод модели нужно сверять с исходными фрагментами. Локальный аудит проверил регрессионные тесты, запуск интерфейса и чтение списка отчётов. Полная установка с нуля и сквозной прогон с моделью ещё требуют проверки.
 
-Author credited in this project’s original documentation · **Fanral**
-
-## Кратко для портфолио
-
-Локальное приложение для анализа доступных публикаций TikTok. Объединяет субтитры, OCR и распознавание речи, формирует выводы с локальной LLM и экспортирует отчёты со ссылками на источники.
+Автор, указанный в исходной документации проекта · **Fanral**
